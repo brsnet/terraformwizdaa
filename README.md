@@ -222,6 +222,7 @@ This connects Argo CD to a Git repository and syncs the manifests in `manifests/
 - Creates the `realtor-apps` namespace
 - Creates an Argo CD `Application` (`kubernetes_manifest.leads_application`) that syncs `realtor-apps/manifests/` from **this same repo** into that namespace — a self-referencing GitOps setup, since [brsnet/Leads](https://github.com/brsnet/Leads) itself has no Kubernetes manifests
 - `realtor-apps/manifests/deployment.yaml` and `service.yaml` define the actual `leads` Deployment (image `leads-leads:latest`, container port `8080`) and a `LoadBalancer` Service always exposing it at `http://localhost:8080` (same Docker Desktop `LoadBalancer` behavior used for the Argo CD UI)
+- `realtor-apps/manifests/secret.yaml` defines the `leads-env` Secret with empty placeholders for every env var the Leads app reads (`PORT`, `API_KEY`, `DB_DSN`, `DB_PATH`, `EVOLUTION_BASE_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE`, `META_PHONE_NUMBER_ID`, `META_ACCESS_TOKEN`, `SEND_RATE_PER_SECOND`, `SEND_BATCH_SIZE`, `DASHBOARD_USER`, `DASHBOARD_PASSWORD`); the Deployment wires them in via `envFrom.secretRef`
 
 Apply order matters: the root config must be applied first (it installs the Argo CD CRDs this module's `kubernetes_manifest.leads_application` depends on).
 
@@ -233,6 +234,17 @@ terraform apply                 # realtor-apps namespace + Argo CD Application
 ```
 
 The Argo CD `Application` only syncs successfully once `realtor-apps/manifests/` exists on the branch it targets (`main` by default, see `target_revision` variable) — until this folder is merged, the app shows `ComparisonError` / sync status `Unknown` in the Argo CD UI, and self-heals once merged.
+
+#### Filling in the Leads env secret
+
+`leads-env`'s real values are **not** stored in git — fill them in directly on the live cluster after the app syncs:
+
+```powershell
+kubectl edit secret leads-env -n realtor-apps
+# or, via the Argo CD UI: Application "leads" → leads-env → Edit
+```
+
+The Argo CD `Application`'s `ignoreDifferences` (on `Secret.leads-env`'s `/data` field) keeps `selfHeal` from reverting those values back to the empty placeholders committed in git.
 
 ---
 
