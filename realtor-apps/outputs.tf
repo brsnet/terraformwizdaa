@@ -5,5 +5,5 @@ output "namespace_name" {
 
 output "leads_url" {
   description = "URL where the Leads app is always reachable"
-  value       = "http://localhost:8080"
+  value       = "http://localhost:6000"
 }
