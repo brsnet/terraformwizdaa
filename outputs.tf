@@ -12,3 +12,8 @@ output "argocd_namespace" {
   description = "Namespace where Argo CD is installed"
   value       = kubernetes_namespace.argocd.metadata[0].name
 }
+
+output "argocd_url" {
+  description = "URL where the Argo CD UI is always reachable"
+  value       = "https://localhost:${var.argocd_expose_port}"
+}

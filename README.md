@@ -120,6 +120,7 @@ terraform apply
 | `namespace` | `wizdaa-lab` | Name of the namespace to create |
 | `argocd_namespace` | `argocd` | Namespace to install Argo CD into |
 | `argocd_chart_version` | `null` (latest) | Version of the `argo-cd` Helm chart to install |
+| `argocd_expose_port` | `7000` | Host port that always exposes the Argo CD UI/API via a `LoadBalancer` service |
 
 ### Outputs
 
@@ -128,6 +129,7 @@ terraform apply
 | `namespace_name` | Name of the created namespace |
 | `namespace_uid` | UID assigned by Kubernetes |
 | `argocd_namespace` | Namespace where Argo CD is installed |
+| `argocd_url` | URL where the Argo CD UI is always reachable |
 
 ### Destroy
 
@@ -181,21 +183,20 @@ Pin the chart version with `-var="argocd_chart_version=X.Y.Z"` (or set it in a `
 
 ### Access the UI
 
-```powershell
-# Port-forward the Argo CD API server
-kubectl port-forward svc/argocd-server -n argocd 8080:443
+Terraform also creates a `LoadBalancer` service (`argocd-server-lb`, see `argocd.tf`) that always exposes the Argo CD server on `https://localhost:7000` — Docker Desktop binds `LoadBalancer` services directly to `localhost`, so no `kubectl port-forward` is needed. The port is configurable via the `argocd_expose_port` variable and available as the `argocd_url` output.
 
+```powershell
 # Retrieve the initial admin password
 kubectl get secret argocd-initial-admin-secret -n argocd `
   -o jsonpath="{.data.password}" | [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($_))
 ```
 
-Open `https://localhost:8080` in your browser and log in with username `admin` and the password above.
+Open `https://localhost:7000` in your browser and log in with username `admin` and the password above.
 
 ### Login via CLI
 
 ```powershell
-argocd login localhost:8080 --username admin --insecure
+argocd login localhost:7000 --username admin --insecure
 ```
 
 ### Deploy an application
