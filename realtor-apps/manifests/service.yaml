@@ -11,6 +11,6 @@ spec:
     app: leads
   ports:
     - name: http
-      port: 6000
+      port: 7001
       targetPort: 6000
       protocol: TCP
