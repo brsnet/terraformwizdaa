@@ -27,6 +27,13 @@ resource "kubernetes_manifest" "leads_application" {
           prune    = true
           selfHeal = true
         }
+
+        # Without this, ignoreDifferences only suppresses drift *reporting* —
+        # any sync (even one triggered by an unrelated resource in this app)
+        # still applies git's version of the ignored fields, wiping leads-env's
+        # real values. This makes sync use the *live* value for ignored fields
+        # instead, so real secret data survives every future sync.
+        syncOptions = ["RespectIgnoreDifferences=true"]
       }
 
       # leads-env's data is filled in by hand after sync (via kubectl/Argo CD UI),

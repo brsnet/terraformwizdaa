@@ -244,7 +244,7 @@ kubectl edit secret leads-env -n realtor-apps
 # or, via the Argo CD UI: Application "leads" → leads-env → Edit
 ```
 
-The Argo CD `Application`'s `ignoreDifferences` (on `Secret.leads-env`'s `/data` field) keeps `selfHeal` from reverting those values back to the empty placeholders committed in git.
+The Argo CD `Application`'s `ignoreDifferences` (on `Secret.leads-env`'s `/data` and `/stringData` fields) plus the `RespectIgnoreDifferences=true` sync option keep those values from being reverted back to the empty placeholders committed in git — this holds even when a sync is triggered by changes to *other* resources in this app (e.g. the Deployment or Service), not just this Secret.
 
 ---
 
