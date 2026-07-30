@@ -28,6 +28,18 @@ resource "kubernetes_manifest" "leads_application" {
           selfHeal = true
         }
       }
+
+      # leads-env's data is filled in by hand after sync (via kubectl/Argo CD UI),
+      # not committed to git — ignore drift so selfHeal doesn't wipe it back out.
+      ignoreDifferences = [
+        {
+          group        = ""
+          kind         = "Secret"
+          name         = "leads-env"
+          namespace    = kubernetes_namespace.realtor_apps.metadata[0].name
+          jsonPointers = ["/data"]
+        }
+      ]
     }
   }
 }
