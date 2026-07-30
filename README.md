@@ -89,6 +89,13 @@ provider "kubernetes" {
   config_path    = pathexpand("~/.kube/config")
   config_context = "docker-desktop"
 }
+
+provider "helm" {
+  kubernetes {
+    config_path    = pathexpand("~/.kube/config")
+    config_context = "docker-desktop"
+  }
+}
 ```
 
 ### Apply
@@ -103,12 +110,16 @@ terraform plan
 terraform apply
 ```
 
+`terraform apply` creates the `wizdaa-lab` namespace and installs Argo CD (via the `argo-cd` Helm chart from `argo-helm`) into the `argocd` namespace in one step — no manual `kubectl apply` needed. See [Argo CD (GitOps)](#argo-cd-gitops) below.
+
 ### Variables
 
 | Name | Default | Description |
 |------|---------|-------------|
 | `kube_context` | `docker-desktop` | kubeconfig context to target |
 | `namespace` | `wizdaa-lab` | Name of the namespace to create |
+| `argocd_namespace` | `argocd` | Namespace to install Argo CD into |
+| `argocd_chart_version` | `null` (latest) | Version of the `argo-cd` Helm chart to install |
 
 ### Outputs
 
@@ -116,6 +127,7 @@ terraform apply
 |------|-------------|
 | `namespace_name` | Name of the created namespace |
 | `namespace_uid` | UID assigned by Kubernetes |
+| `argocd_namespace` | Namespace where Argo CD is installed |
 
 ### Destroy
 
@@ -158,15 +170,14 @@ curl http://localhost:8080
 
 ### Install
 
-```powershell
-# Create namespace and install Argo CD
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+Argo CD is installed by Terraform (`argocd.tf`) via the official [`argo-helm`](https://github.com/argoproj/argo-helm) chart — `terraform apply` creates the `argocd` namespace and installs the `argo-cd` Helm release into it, so no manual `kubectl apply` of the raw manifests is needed:
 
-# Wait for pods to be ready
-kubectl wait --for=condition=available deployment -l "app.kubernetes.io/name=argocd-server" -n argocd --timeout=120s
+```powershell
+terraform apply
 kubectl get pods -n argocd
 ```
+
+Pin the chart version with `-var="argocd_chart_version=X.Y.Z"` (or set it in a `.tfvars` file) if you need reproducible installs instead of always tracking the latest chart.
 
 ### Access the UI
 

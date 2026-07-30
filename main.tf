@@ -6,12 +6,23 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.27"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.12"
+    }
   }
 }
 
 provider "kubernetes" {
   config_path    = pathexpand("~/.kube/config")
   config_context = var.kube_context
+}
+
+provider "helm" {
+  kubernetes {
+    config_path    = pathexpand("~/.kube/config")
+    config_context = var.kube_context
+  }
 }
 
 resource "kubernetes_namespace" "wizdaa_lab" {

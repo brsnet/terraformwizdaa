@@ -4,12 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A minimal Terraform config that provisions a single Kubernetes namespace (`kubernetes_namespace.wizdaa_lab`) against a local Docker Desktop Kubernetes cluster. It's the Terraform piece of a larger local lab ("Wizdaa") for practicing Kubernetes, Argo CD, GitOps, and platform engineering — see `README.md` for the full lab setup (Docker Desktop, kubectl, Argo CD install/config, OpenShift notes).
+A minimal Terraform config that provisions a Kubernetes namespace (`kubernetes_namespace.wizdaa_lab`) and installs Argo CD (via the `argo-cd` Helm chart) against a local Docker Desktop Kubernetes cluster. It's the Terraform piece of a larger local lab ("Wizdaa") for practicing Kubernetes, Argo CD, GitOps, and platform engineering — see `README.md` for the full lab setup (Docker Desktop, kubectl, Argo CD usage, OpenShift notes).
 
 Files:
-- `main.tf` — provider config (`hashicorp/kubernetes`, targets `~/.kube/config`) and the namespace resource
-- `variables.tf` — `kube_context` (default `docker-desktop`), `namespace` (default `wizdaa-lab`)
-- `outputs.tf` — `namespace_name`, `namespace_uid`
+- `main.tf` — provider config (`hashicorp/kubernetes`, `hashicorp/helm`, both targeting `~/.kube/config`) and the `wizdaa-lab` namespace resource
+- `argocd.tf` — `argocd` namespace and the `helm_release.argocd` resource (chart from `https://argoproj.github.io/argo-helm`)
+- `variables.tf` — `kube_context` (default `docker-desktop`), `namespace` (default `wizdaa-lab`), `argocd_namespace` (default `argocd`), `argocd_chart_version` (default `null` = latest)
+- `outputs.tf` — `namespace_name`, `namespace_uid`, `argocd_namespace`
+
+`terraform init` needs network access to pull the Argo CD Helm chart index from `argoproj.github.io/argo-helm`; `terraform apply` needs network access to pull the chart's container images into the cluster.
 
 ## Commands
 
