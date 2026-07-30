@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leads
+  namespace: realtor-apps
+  labels:
+    app: leads
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: leads
+  template:
+    metadata:
+      labels:
+        app: leads
+    spec:
+      containers:
+        - name: leads
+          image: leads-leads:latest
+          ports:
+            - containerPort: 8080

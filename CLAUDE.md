@@ -14,6 +14,15 @@ Files:
 
 `terraform init` needs network access to pull the Argo CD Helm chart index from `argoproj.github.io/argo-helm`; `terraform apply` needs network access to pull the chart's container images into the cluster.
 
+### `realtor-apps/` — separate Terraform module
+
+A second, independent Terraform root (its own state, its own `terraform init`/`apply`) for deploying the `leads` app via Argo CD GitOps:
+
+- `main.tf` — provider config + the `realtor-apps` namespace
+- `argocd-app.tf` — `kubernetes_manifest.leads_application`, an Argo CD `Application` CR (in the `argocd` namespace) that syncs `realtor-apps/manifests/` from **this repo** (`repo_url`/`repo_path`/`target_revision` variables) into the `realtor-apps` namespace
+- `manifests/deployment.yaml`, `manifests/service.yaml` — the actual Kubernetes manifests Argo CD syncs (not applied directly by Terraform); the Leads app repo itself (`github.com/brsnet/Leads`) has no manifests, so these are authored and owned here
+- Must be applied *after* the root module (its `kubernetes_manifest.leads_application` requires the Argo CD CRDs the root module installs), and its Argo `Application` only syncs successfully once `realtor-apps/manifests/` exists on the `target_revision` branch (default `main`)
+
 ## Commands
 
 Target cluster must be `docker-desktop` (Docker Desktop's built-in Kubernetes), verified via `kubectl config current-context`.

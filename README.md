@@ -215,6 +215,25 @@ argocd app get wizdaa-lab
 
 This connects Argo CD to a Git repository and syncs the manifests in `manifests/` into the `wizdaa-lab` namespace automatically.
 
+### Example: `realtor-apps/` — Leads app via Argo CD
+
+`realtor-apps/` is a self-contained Terraform module (its own state) that:
+
+- Creates the `realtor-apps` namespace
+- Creates an Argo CD `Application` (`kubernetes_manifest.leads_application`) that syncs `realtor-apps/manifests/` from **this same repo** into that namespace — a self-referencing GitOps setup, since [brsnet/Leads](https://github.com/brsnet/Leads) itself has no Kubernetes manifests
+- `realtor-apps/manifests/deployment.yaml` and `service.yaml` define the actual `leads` Deployment (image `leads-leads:latest`, container port `8080`) and a `LoadBalancer` Service always exposing it at `http://localhost:8080` (same Docker Desktop `LoadBalancer` behavior used for the Argo CD UI)
+
+Apply order matters: the root config must be applied first (it installs the Argo CD CRDs this module's `kubernetes_manifest.leads_application` depends on).
+
+```powershell
+terraform apply                 # root: namespace + Argo CD
+cd realtor-apps
+terraform init
+terraform apply                 # realtor-apps namespace + Argo CD Application
+```
+
+The Argo CD `Application` only syncs successfully once `realtor-apps/manifests/` exists on the branch it targets (`main` by default, see `target_revision` variable) — until this folder is merged, the app shows `ComparisonError` / sync status `Unknown` in the Argo CD UI, and self-heals once merged.
+
 ---
 
 ## OpenShift (Optional)
