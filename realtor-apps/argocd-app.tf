@@ -37,9 +37,13 @@ resource "kubernetes_manifest" "leads_application" {
           kind         = "Secret"
           name         = "leads-env"
           namespace    = kubernetes_namespace.realtor_apps.metadata[0].name
-          jsonPointers = ["/data"]
+          jsonPointers = ["/data", "/stringData"]
         }
       ]
     }
+  }
+
+  field_manager {
+    force_conflicts = true
   }
 }
