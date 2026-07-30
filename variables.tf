@@ -9,3 +9,15 @@ variable "namespace" {
   type        = string
   default     = "wizdaa-lab"
 }
+
+variable "argocd_namespace" {
+  description = "Namespace to install Argo CD into"
+  type        = string
+  default     = "argocd"
+}
+
+variable "argocd_chart_version" {
+  description = "Version of the argo-cd Helm chart to install (see https://artifacthub.io/packages/helm/argo/argo-cd). Leave null to install the latest available version."
+  type        = string
+  default     = null
+}
