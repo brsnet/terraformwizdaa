@@ -8,9 +8,9 @@ A minimal Terraform config that provisions a Kubernetes namespace (`kubernetes_n
 
 Files:
 - `main.tf` — provider config (`hashicorp/kubernetes`, `hashicorp/helm`, both targeting `~/.kube/config`) and the `wizdaa-lab` namespace resource
-- `argocd.tf` — `argocd` namespace and the `helm_release.argocd` resource (chart from `https://argoproj.github.io/argo-helm`)
-- `variables.tf` — `kube_context` (default `docker-desktop`), `namespace` (default `wizdaa-lab`), `argocd_namespace` (default `argocd`), `argocd_chart_version` (default `null` = latest)
-- `outputs.tf` — `namespace_name`, `namespace_uid`, `argocd_namespace`
+- `argocd.tf` — `argocd` namespace, the `helm_release.argocd` resource (chart from `https://argoproj.github.io/argo-helm`), and `kubernetes_service.argocd_server_lb`, a `LoadBalancer` service that always exposes the Argo CD server on a fixed host port (Docker Desktop binds `LoadBalancer` services directly to `localhost`, so no `kubectl port-forward` is needed)
+- `variables.tf` — `kube_context` (default `docker-desktop`), `namespace` (default `wizdaa-lab`), `argocd_namespace` (default `argocd`), `argocd_chart_version` (default `null` = latest), `argocd_expose_port` (default `7000`)
+- `outputs.tf` — `namespace_name`, `namespace_uid`, `argocd_namespace`, `argocd_url`
 
 `terraform init` needs network access to pull the Argo CD Helm chart index from `argoproj.github.io/argo-helm`; `terraform apply` needs network access to pull the chart's container images into the cluster.
 

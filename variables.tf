@@ -21,3 +21,9 @@ variable "argocd_chart_version" {
   type        = string
   default     = null
 }
+
+variable "argocd_expose_port" {
+  description = "Host port that always exposes the Argo CD server UI/API (HTTPS) via a LoadBalancer service"
+  type        = number
+  default     = 7000
+}
