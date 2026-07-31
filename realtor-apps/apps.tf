@@ -15,7 +15,7 @@ locals {
       has_secret = true
       port       = 7001
     }
-    leads_crawler = {
+    leads-crawler = {
       has_secret = true
       port       = 7002
     }
