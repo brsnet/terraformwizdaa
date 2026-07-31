@@ -5,7 +5,7 @@ variable "kube_context" {
 }
 
 variable "namespace" {
-  description = "Namespace to deploy the Leads app into"
+  description = "Shared namespace all realtor apps are deployed into"
   type        = string
   default     = "realtor-apps"
 }
@@ -17,19 +17,19 @@ variable "argocd_namespace" {
 }
 
 variable "repo_url" {
-  description = "Git repo Argo CD syncs the Leads manifests from"
+  description = "Git repo Argo CD syncs the app manifests from"
   type        = string
   default     = "https://github.com/brsnet/terraformwizdaa.git"
 }
 
-variable "repo_path" {
-  description = "Path within repo_url containing the Leads Kubernetes manifests"
+variable "repo_path_prefix" {
+  description = "Directory within repo_url holding the per-app folders. Each app's manifests are read from <repo_path_prefix>/<app>/manifests."
   type        = string
-  default     = "realtor-apps/manifests"
+  default     = "realtor-apps"
 }
 
 variable "target_revision" {
-  description = "Git branch/tag/commit Argo CD tracks for the Leads manifests"
+  description = "Git branch/tag/commit Argo CD tracks for the app manifests"
   type        = string
   default     = "main"
 }

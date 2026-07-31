@@ -14,6 +14,9 @@ provider "kubernetes" {
   config_context = var.kube_context
 }
 
+# Shared by every app in local.apps — owned by this root only. Per-app config
+# belongs in apps.tf and <app>/manifests/, never in a separate Terraform root
+# that would try to create this namespace a second time.
 resource "kubernetes_namespace" "realtor_apps" {
   metadata {
     name = var.namespace

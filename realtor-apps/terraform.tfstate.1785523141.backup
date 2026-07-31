@@ -1,11 +1,11 @@
 {
   "version": 4,
   "terraform_version": "1.15.8",
-  "serial": 12,
-  "lineage": "55d2a2ba-ce14-02b9-bafc-bd108a9d0cc5",
+  "serial": 3,
+  "lineage": "2f12f571-7c90-bc31-cbe3-caf7394a583c",
   "outputs": {
     "leads_url": {
-      "value": "http://localhost:8080",
+      "value": "http://localhost:7001",
       "type": "string"
     },
     "namespace_name": {
@@ -1747,7 +1747,7 @@
             "id": "realtor-apps",
             "metadata": [
               {
-                "annotations": {},
+                "annotations": null,
                 "generate_name": "",
                 "generation": 0,
                 "labels": {
@@ -1756,8 +1756,8 @@
                   "project": "realtor-apps"
                 },
                 "name": "realtor-apps",
-                "resource_version": "9262",
-                "uid": "4d614c15-7ccf-4ca9-839c-59099f321615"
+                "resource_version": "83701",
+                "uid": "3c56e100-6d30-4ebc-a1b9-066efa504edf"
               }
             ],
             "timeouts": null,
