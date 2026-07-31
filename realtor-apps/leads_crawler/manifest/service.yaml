@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: leads_crawler
+  namespace: realtor-apps
+  labels:
+    app: leads_crawler
+spec:
+  type: LoadBalancer
+  selector:
+    app: leads_crawler
+  ports:
+    - name: http
+      port: 7002
+      targetPort: 7002
+      protocol: TCP
